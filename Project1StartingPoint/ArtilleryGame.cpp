@@ -39,6 +39,7 @@ glm::vec3 dirToShoot;
 
 bool IF_SHOT = false;
 bool IF_HIT = false;
+bool IF_MISS = false;
 ProjectileTypes projectileType;
 
 glm::vec3 RandomVector(int max, int min)
@@ -73,7 +74,12 @@ void ArtilleryGame::ShootProjectile(glm::vec3 direction)
 	{
 		m_Bullet.particle->velocity = glm::vec3(0.f, 0.f, 0.f);
 		return;
+
+		         ------------------------------
+		---------------------------------------
+
 	}*/
+
 	switch (projectileType)
 	{
 	case ProjectileTypes::ARMOR_PIERCING:
@@ -103,21 +109,26 @@ void ArtilleryGame::ShootProjectile(glm::vec3 direction)
 
 bool ArtilleryGame::HitOrMiss()
 {
-	if (m_Bullet.particle->position.x <= m_AimBall.particle->position.x + 1 &&
-		m_Bullet.particle->position.x >= m_AimBall.particle->position.x - 1
-		&& m_Bullet.particle->position.z <= m_AimBall.particle->position.z + 1
-		&& m_Bullet.particle->position.z >= m_AimBall.particle->position.z - 1)
-	{
-		m_Bullet.particle->SetMass(-1.f);
-		m_Bullet.particle->SetPosition(m_AimBall.particle->position);
-		int x = 0.f;
-	}
 	if (m_Bullet.particle->position.x <= m_EnemyTank.particle->position.x + 1 && 
 		m_Bullet.particle->position.x >= m_EnemyTank.particle->position.x - 1
 		&& m_Bullet.particle->position.z <= m_EnemyTank.particle->position.z + 1
 		&& m_Bullet.particle->position.z >= m_EnemyTank.particle->position.z - 1)
 	{
+		m_Bullet.particle->SetMass(-1.f);
+		m_Bullet.particle->SetPosition(m_EnemyTank.particle->position);
 		return true;
+	}
+
+	if (m_Bullet.particle->position.x <= m_AimBall.particle->position.x + 1 &&
+		m_Bullet.particle->position.x >= m_AimBall.particle->position.x - 1
+		&& m_Bullet.particle->position.z <= m_AimBall.particle->position.z + 1
+		&& m_Bullet.particle->position.z >= m_AimBall.particle->position.z - 1)
+	{
+		if(!IF_MISS)
+			std::cout << "ENEMY TANK MISSED :( \t Press 'N' to start new Game" << std::endl;
+		IF_MISS = true;
+		m_Bullet.particle->SetMass(-1.f);
+		m_Bullet.particle->SetPosition(m_AimBall.particle->position);
 	}
 	return false;
 }
@@ -237,7 +248,11 @@ void ArtilleryGame::GameUpdate()
 		ArtilleryGame::StartNewGame();
 	}
 
-	IF_HIT = HitOrMiss();
+	if (HitOrMiss() && !IF_HIT)
+	{
+		IF_HIT = true;
+		std::cout << "ENEMY TANK HIT :) \t Press 'N' to start new game!";
+	}
 
 	if (!IF_SHOT)
 	{
