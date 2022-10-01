@@ -1,0 +1,8 @@
+newmtl SoccerBall
+Ka 0.00 0.00 0.00
+Kd 0.50 0.50 0.50
+Ks 0.50 0.50 0.50
+d 1.0f
+Ns 1.0f
+illum 2
+map_Kd soccerball.bmp
