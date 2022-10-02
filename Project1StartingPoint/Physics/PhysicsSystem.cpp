@@ -16,9 +16,10 @@ Particle* PhysicsSystem::CreateParticle(const glm::vec3& position)
 	return particle;
 }
 
-void PhysicsSystem::UpdateStep(float duration, bool isProjectile)
+void PhysicsSystem::UpdateStep(float duration, bool isProjectile, glm::vec3 target)
 {
 	size_t numParticles = m_Particles.size();
+
 	for (int i = 0; i < numParticles; i++)
 	{
 		m_Particles[i]->ApplyForce(glm::vec3(0, -9.81f, 0));
@@ -26,11 +27,10 @@ void PhysicsSystem::UpdateStep(float duration, bool isProjectile)
 
 	for (int i = 0; i < numParticles; i++)
 	{
-		m_Particles[i]->Integrate(duration);
+		if(!m_Particles[i]->isBullet || !isProjectile)
+			m_Particles[i]->Integrate(duration);
+		//m_Particles[i]->Integrate(duration);
 	}
-
-	/*if (isProjectile)
-		return;*/
 
 	for (int i = 0; i < numParticles; i++)
 	{

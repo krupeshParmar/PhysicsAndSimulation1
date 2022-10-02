@@ -30,9 +30,9 @@ public:
 	glm::vec3 force;
 	float radius;
 	float damping;
+	bool isBullet;
 
 private:
-
 	float invMass;
 	bool m_IsStatic;
 };

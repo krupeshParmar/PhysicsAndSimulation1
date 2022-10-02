@@ -158,7 +158,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Physics\Particle.cpp" />
     <ClCompile Include="Physics\PhysicsSystem.cpp" />
-    <ClCompile Include="Physics\Projectile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ArtilleryGame.h" />
@@ -166,7 +165,6 @@
     <ClInclude Include="GameUnits.h" />
     <ClInclude Include="Physics\Particle.h" />
     <ClInclude Include="Physics\PhysicsSystem.h" />
-    <ClInclude Include="Physics\Projectile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

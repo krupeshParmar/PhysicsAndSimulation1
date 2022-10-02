@@ -4,8 +4,6 @@
 #include <string>
 #include "GameUnits.h"
 #include "Physics/PhysicsSystem.h"
-#include "Physics/Projectile.h"
-
 using namespace gdp; 
 
 

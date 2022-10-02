@@ -10,7 +10,7 @@
 #define HE glm::vec3(1, 0.6, 0.35)
 #define HEAT glm::vec3(1, 0.8, 0.1)
 #define HESH glm::vec3(1, 0.25, 0)
-#define DEBUG_LOG_ENABLED
+//#define DEBUG_LOG_ENABLED
 #ifdef DEBUG_LOG_ENABLED
 #define DEBUG_PRINT(x, ...) printf(x, __VA_ARGS__)
 #else
@@ -70,46 +70,82 @@ float AngleBetweenVectors(glm::vec3 vec1, glm::vec3 vec2)
 
 void ArtilleryGame::ShootProjectile(glm::vec3 direction)
 {
-	/*if (m_Bullet.particle->GetPosition() == direction)
+	glm::vec3 target = direction;
+	glm::vec3 distance = m_PlayerTank.particle->position - m_Bullet.particle->position;
+	float distanceCovered = sqrt(distance.x * distance.x + distance.y * distance.y + distance.z * distance.z);
+	float totalDistance = sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+	/*m_Bullet.particle->damping = 1.f;
+	if (distanceCovered <= totalDistance / 2.f)
 	{
-		m_Bullet.particle->velocity = glm::vec3(0.f, 0.f, 0.f);
-		return;
-
-		         ------------------------------
-		---------------------------------------
-
+		target = glm::vec3(direction.x, 10, direction.z);
+	}
+	else
+	{
+		target = glm::vec3(direction.x, -totalDistance - distanceCovered * 2.f, direction.z);
 	}*/
+
+	float intTime = 0.f;
+	float mass = 0.f;
+
+	float a_alpha = 0.f;
 
 	switch (projectileType)
 	{
 	case ProjectileTypes::ARMOR_PIERCING:
-		m_Bullet.particle->SetMass(10.f);
-		m_Bullet.particle->ApplyForce(direction);
+		mass = 10.f;
+		intTime = 0.001;
+		a_alpha = 15.f;
 		break;
 	case ProjectileTypes::ARMOR_PIERCING_COMPOSITE_RIGID:
-		m_Bullet.particle->SetMass(5.f);
-		m_Bullet.particle->ApplyForce(direction);
+		mass = 5.f;
+		intTime = 0.005;
+		a_alpha = 15.f;
 		break;
 	case ProjectileTypes::HIGH_EXPLOSIVES:
-		m_Bullet.particle->SetMass(20.f);
-		m_Bullet.particle->ApplyForce(direction);
+		mass = 20.f;
+		intTime = 0.0009;
+		a_alpha = 45.f;
 		break;
 	case ProjectileTypes::HIGH_EXPLOSIVE_ANTI_TANK:
-		m_Bullet.particle->SetMass(15.f);
-		m_Bullet.particle->ApplyForce(direction);
+		mass = 15.f;
+		intTime = 0.0015;
+		a_alpha = 20.f;
 		break;
 	case ProjectileTypes::HIGH_EXPLOSIVES_SQUASH_HEAD:
-		m_Bullet.particle->SetMass(30.f);
-		m_Bullet.particle->ApplyForce(direction);
+		mass = 30.f;
+		intTime = 0.0007;
+		a_alpha = 45.0f;
 		break;
 	default:
 		break;
 	}
+
+	float time = 5.0f;
+	float v_X = totalDistance / time;
+	float vel = v_X / cos(a_alpha);
+	float v_Y = vel * sin(a_alpha);
+
+	if (distanceCovered <= totalDistance / 2.f - (totalDistance * 0.1))
+	{
+		if(v_Y < 0)
+			target.y -= v_Y * 0.99f;
+		else
+			target.y += v_Y;
+	}
+	else if (distanceCovered >  totalDistance / 2.f + (totalDistance * 0.1)) {
+		if (v_Y < 0)
+			target.y += v_Y;
+		else
+			target.y -= v_Y;
+	}
+
+	m_Bullet.particle->velocity = (target);
+	m_Bullet.particle->Integrate(intTime);
 }
 
 bool ArtilleryGame::HitOrMiss()
 {
-	if (m_Bullet.particle->position.x <= m_EnemyTank.particle->position.x + 1 && 
+	if (m_Bullet.particle->GetPosition().y <= 1.1f && m_Bullet.particle->position.x <= m_EnemyTank.particle->position.x + 1 && 
 		m_Bullet.particle->position.x >= m_EnemyTank.particle->position.x - 1
 		&& m_Bullet.particle->position.z <= m_EnemyTank.particle->position.z + 1
 		&& m_Bullet.particle->position.z >= m_EnemyTank.particle->position.z - 1)
@@ -119,7 +155,7 @@ bool ArtilleryGame::HitOrMiss()
 		return true;
 	}
 
-	if (m_Bullet.particle->position.x <= m_AimBall.particle->position.x + 1 &&
+	if (m_Bullet.particle->GetPosition().y <= 1.1f && m_Bullet.particle->position.x <= m_AimBall.particle->position.x + 1 &&
 		m_Bullet.particle->position.x >= m_AimBall.particle->position.x - 1
 		&& m_Bullet.particle->position.z <= m_AimBall.particle->position.z + 1
 		&& m_Bullet.particle->position.z >= m_AimBall.particle->position.z - 1)
@@ -173,9 +209,11 @@ void ArtilleryGame::Initialize()
 	m_EnemyTank.particle = m_PhysicsSystem.CreateParticle(RandomVector(20.f, -20.f));
 	m_EnemyTank.gameObject = CreateGameObjectByType("Enemy");
 
-	m_Bullet.particle = m_PhysicsSystem.CreateParticle(m_PlayerTank.particle->position);
+	m_Bullet.particle = m_PhysicsSystem.CreateParticle(m_PlayerTank.particle->GetPosition());
 	m_Bullet.gameObject = CreateGameObjectByType("Bullet");
-	m_Bullet.particle->radius = 0.7f;
+	m_Bullet.gameObject->Scale = glm::vec3(1.5f, 1.5f, 1.5f);
+	m_Bullet.particle->isBullet = true;
+	//m_Bullet.particle->radius = 0.7f;
 	//m_Bullet.gameObject->Renderer.MaterialId = SphereMaterialId_AP;
 
 
@@ -221,10 +259,21 @@ void ArtilleryGame::StartNewGame()
 	//DEBUG_PRINT("ArtilleryGame::StartNewGame\n");
 	// TODO:
 	IF_SHOT = false;
+	IF_HIT = false;
+	IF_MISS = false;
 	m_EnemyTank.particle->SetPosition(RandomVector(20, -20));
 	m_PlayerTank.particle->SetPosition(RandomVector(20, -20));
-	m_Bullet.particle->SetPosition(m_PlayerTank.particle->GetPosition());
+	m_AimBall.particle->SetPosition(glm::vec3(0, 10.f, 0));
 	m_Bullet.particle->SetMass(1.f);
+	m_Bullet.particle->velocity = glm::vec3(0, 0, 0);
+	m_Bullet.particle->KillAllForces();
+	m_Bullet.particle->SetPosition(m_PlayerTank.particle->GetPosition());
+
+	m_PlayerTank.gameObject->Position = m_PlayerTank.particle->GetPosition();
+
+	m_Bullet.gameObject->Position = m_Bullet.particle->GetPosition();
+
+	m_EnemyTank.gameObject->Position = m_EnemyTank.particle->GetPosition();
 }
 
 /// <summary>
@@ -233,11 +282,11 @@ void ArtilleryGame::StartNewGame()
 /// Check for bullet collision (position.y <= 0, hit ground)
 /// Check for User input:
 /// >>> GDP_IsKeyPressed, GDP_IsKeyHeldDown <-- Case Sensitive
-/// >>> example: if (GDP_IsKeyPressed('n') || GDP_IsKeyPressed('N'))
-/// - Input for changing the bullet direction	(wasd, etc)
-/// - Input to change the projectile type		(1,2,3,4,5)
-/// - Input to fire a projectile				(space)
-/// - Input to start a new game					(n)
+/// >>> example: if (GDP_IsKeyPressed('n') || GDP_IsKeyPressed('N'))	X
+/// - Input for changing the bullet direction	(wasd, etc)				X
+/// - Input to change the projectile type		(1,2,3,4,5)				X
+/// - Input to fire a projectile				(space)			
+/// - Input to start a new game					(n)						X
 /// </summary>
 void ArtilleryGame::GameUpdate()
 {
@@ -256,7 +305,7 @@ void ArtilleryGame::GameUpdate()
 
 	if (!IF_SHOT)
 	{
-		dirToShoot = m_AimBall.particle->position - m_Bullet.particle->position;
+		dirToShoot = m_AimBall.particle->GetPosition() - m_Bullet.particle->GetPosition();
 		if (GDP_IsKeyHeldDown('a'))
 			m_AimBall.particle->ApplyForce(glm::vec3(1, 0, 0));
 
@@ -302,8 +351,6 @@ void ArtilleryGame::GameUpdate()
 		if (GDP_IsKeyPressed(32))
 		{
 			IF_SHOT = true;
-
-			//ShootProjectile(dirToShoot);
 		}
 	}
 
@@ -311,20 +358,16 @@ void ArtilleryGame::GameUpdate()
 		ShootProjectile(dirToShoot);
 
 	// System/Engine update step
-	m_PhysicsSystem.UpdateStep(0.01, IF_SHOT);
-
-	/*m_PlayerTank.gameObject->Rotation = glm::angleAxis(AngleBetweenVectors(
-		m_PlayerTank.gameObject->Position, m_AimBall.gameObject->Position),
-		glm::vec3(0.f, 1.f, 0.f));*/
+		m_PhysicsSystem.UpdateStep(0.01, IF_SHOT, dirToShoot);
 
 	// Update the Visual object from the Physics object
 	m_AimBall.gameObject->Position = m_AimBall.particle->GetPosition();
-
-	//m_PlayerTank.gameObject->Rotation = glm::quatLookAt(NormalizeVector(m_AimBall.gameObject->Position), glm::vec3(0.f, 1.f, 0.f));
-
+	
 	m_PlayerTank.gameObject->Position = m_PlayerTank.particle->GetPosition();
 
-	m_Bullet.gameObject->Position = m_Bullet.particle->position;
+	if(IF_SHOT)
+		m_Bullet.gameObject->Position = m_Bullet.particle->GetPosition();
+	else m_Bullet.gameObject->Position = m_PlayerTank.particle->GetPosition();
 
 	m_EnemyTank.gameObject->Position = m_EnemyTank.particle->GetPosition();
 }

@@ -15,6 +15,7 @@ Particle::Particle(const glm::vec3& position)
 	, radius(1.f)
 	, force(glm::vec3(0,0,0))
 	, m_IsStatic(false)
+	, isBullet(false)
 {
 
 }
