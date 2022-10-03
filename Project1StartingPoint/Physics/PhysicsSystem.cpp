@@ -1,4 +1,5 @@
 #include "PhysicsSystem.h"
+#include "../GameUnits.h"
 
 PhysicsSystem::PhysicsSystem() {
 
@@ -9,6 +10,8 @@ PhysicsSystem::~PhysicsSystem() {
 		delete m_Particles[i];
 }
 
+
+// Create particle on given position
 Particle* PhysicsSystem::CreateParticle(const glm::vec3& position)
 {
 	Particle* particle = new Particle(position);
@@ -16,9 +19,12 @@ Particle* PhysicsSystem::CreateParticle(const glm::vec3& position)
 	return particle;
 }
 
-void PhysicsSystem::UpdateStep(float duration, bool isProjectile, glm::vec3 target)
+// Update particles each frame
+void PhysicsSystem::UpdateStep(float duration)
 {
 	size_t numParticles = m_Particles.size();
+
+
 
 	for (int i = 0; i < numParticles; i++)
 	{
@@ -27,9 +33,9 @@ void PhysicsSystem::UpdateStep(float duration, bool isProjectile, glm::vec3 targ
 
 	for (int i = 0; i < numParticles; i++)
 	{
-		if(!m_Particles[i]->isBullet || !isProjectile)
-			m_Particles[i]->Integrate(duration);
-		//m_Particles[i]->Integrate(duration);
+		if (m_Particles[i]->isBullet)
+			continue;
+		m_Particles[i]->Integrate(duration);
 	}
 
 	for (int i = 0; i < numParticles; i++)

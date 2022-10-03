@@ -6,6 +6,8 @@ Particle::Particle()
 
 }
 
+// Create particle with given values
+// Note: every values needs to be initialized or project breaks
 Particle::Particle(const glm::vec3& position)
 	: position(position)
 	, velocity(0.0f)
@@ -30,11 +32,13 @@ Particle::Particle(const Particle& particle)
 
 }
 
+// Assign particle
 Particle Particle::operator=(const Particle& particle)
 {
 	return Particle();
 }
 
+// Set mass of the particle
 void Particle::SetMass(float mass)
 {
 	if (mass <= 0)
@@ -46,11 +50,13 @@ void Particle::SetMass(float mass)
 	m_IsStatic = false;
 }
 
+// Set position of the particle
 void Particle::SetPosition(glm::vec3 newPosition)
 {
 	position = newPosition;
 }
 
+// Integrate force in particle and update position
 void Particle::Integrate(float dt)
 {
 	if (invMass <= 0 || m_IsStatic)
@@ -69,11 +75,13 @@ void Particle::Integrate(float dt)
 	}
 }
 
+// Apply force to particle in given direction
 void Particle::ApplyForce(const glm::vec3& direction)
 {
 	force += direction;
 }
 
+// Kill all the forces
 void Particle::KillAllForces()
 {
 	force = glm::vec3(0.f, 0.f, 0.f);

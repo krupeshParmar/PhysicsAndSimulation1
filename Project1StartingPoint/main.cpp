@@ -1,3 +1,21 @@
+/**
+*
+*	Student name:	Krupesh Ashok Parmar
+*	Student number:	1124374
+*	Student mail:	k_parmar180076@fanshaweonline.ca
+*	Guided by:		Prof. Lukas Gustafson
+*
+*	Program name:	GAME DEVELOPMENT ADVANCED PROGRAMMING
+*	Course name:	Physics & Simulation 1
+*	Course code:	INFO6019
+*
+*					PROJECT - 1
+*					Artillery!
+*
+*	An artillery game about shooting an enemy tank
+*
+**/
+
 #include <gdp/engine.h>
 #include <vector>
 #include <random>
@@ -31,13 +49,13 @@ void LoadScene() {
 	unsigned int groundTextureId;
 	GDP_LoadTexture(enemyTankTextureId, "assets/textures/camo.bmp");
 	GDP_LoadTexture(playerTankTextureId, "assets/textures/camo.bmp");
-	GDP_LoadTexture(bulletTextureId, "assets/textures/white.png");
+	//GDP_LoadTexture(bulletTextureId, "assets/textures/white.png");
 	GDP_LoadTexture(groundTextureId, "assets/textures/grid.png");
 
 	unsigned int groundMaterialId;
 	GDP_CreateMaterial(EnemyMaterialId, enemyTankTextureId, RED);
 	GDP_CreateMaterial(PlayerMaterialId, playerTankTextureId, GREEN);
-	GDP_CreateMaterial(BulletMaterialId, bulletTextureId, BLUE);
+	//GDP_CreateMaterial(BulletMaterialId, bulletTextureId, BLUE);
 	GDP_CreateMaterial(groundMaterialId, groundTextureId, WHITE);
 
 	unsigned int groundModelId;

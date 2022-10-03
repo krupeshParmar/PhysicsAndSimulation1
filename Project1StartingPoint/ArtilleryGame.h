@@ -8,7 +8,7 @@ using namespace gdp;
 
 
 // Projectile types used in the game
-enum class ProjectileTypes
+enum class ProjectileTypes : int
 {
 	ARMOR_PIERCING,						// AP	- Normal penetrating tank shell
 	ARMOR_PIERCING_COMPOSITE_RIGID,		// APCR	- Super fast penetrating shell
@@ -30,6 +30,9 @@ public:
 	void DisplayTextToUser(const std::string& text);
 	void ShootProjectile(glm::vec3);
 	bool HitOrMiss();
+	void Explosion(int);
+	void CreateExplosives();
+	void ResetExplosives();
 
 private:
 	GameObject* CreateGameObjectByType(const std::string& type);
@@ -39,4 +42,5 @@ private:
 	GameUnits m_Bullet;
 	GameUnits m_AimBall;
 	PhysicsSystem m_PhysicsSystem;
+	std::vector<GameUnits*> m_Explosives;
 };
