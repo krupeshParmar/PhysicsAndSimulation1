@@ -254,7 +254,8 @@ void ArtilleryGame::ResetExplosives()
 			m_Explosives[i]->particle->velocity = glm::vec3(0.f, 0.f, 0.f);
 			glm::vec3 pos = glm::vec3(m_EnemyTank.particle->GetPosition().x, 1.f, m_EnemyTank.particle->GetPosition().z);
 			m_Explosives[i]->particle->SetPosition(pos);
-			m_Explosives[i]->gameObject->Position = m_Explosives[i]->particle->position;
+			if(m_Explosives[i]->gameObject != nullptr)
+				m_Explosives[i]->gameObject->Position = m_Explosives[i]->particle->position;
 		}
 }
 
@@ -503,7 +504,7 @@ void ArtilleryGame::GameUpdate()
 		int shots = 0;
 		DisplayTextToUser("\n------------------------------------");
 		DisplayTextToUser("Use WASD keys to navigate the aim ball\n");
-		DisplayTextToUser("Press the shown numbers to change the Projectiles\n");
+		DisplayTextToUser("Press the shown numbers to change the Projectiles\nTry them all to see different explosion effecs\n");
 		DisplayTextToUser("Press the 'Spacebar' to Shoot!\n");
 		DisplayTextToUser("-- Ammo Loadout --");
 		for (int i = 0; i < 5; i++)
